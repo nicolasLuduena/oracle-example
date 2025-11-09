@@ -6,12 +6,53 @@ party Operator;
 party Trash;
 // Address of the oracle smart contract
 party Oracle;
+// Party where we deploy the smart contracts
+party Mint;
+party Spend;
+// Address that pays for the deployment and minting fees
+party Deployer;
 
 // Oracle's Redeemer
 type OracleRedeemer {
     Update,
     Delete,
 }
+
+tx publish(
+    // Plutus version of the NFT minting policy
+    nft_script_version: Int,
+    // Script of the NFT minting policy
+    nft_script: Bytes,
+    // Script of the oracle spending validator
+    oracle_script: Bytes,
+    // Plutus version of the oracle spending validator
+    oracle_script_version: Int,
+) {
+    input gas {
+        from: Deployer,
+        min_amount: fees + Ada(10000000) + min_utxo(change),
+    }
+
+    output change {
+        to: Deployer,
+        amount: gas - fees - Ada(10000000),
+    }
+
+    cardano::publish {
+        to: Spend,
+        amount: Ada(5000000),
+        version: oracle_script_version,
+        script: oracle_script,
+    }
+
+    cardano::publish {
+        to: Mint,
+        amount: Ada(5000000),
+        version: nft_script_version,
+        script: nft_script,
+    }
+}
+
 
 tx create(
     // Output reference of the minting contract delpoyment
@@ -22,43 +63,43 @@ tx create(
     rate: Int,
 ) {
     reference contract {
-      ref: minting_contract_ref,
+        ref: minting_contract_ref,
     }
 
     input oracle_input {
-      ref: oracle_utxo_param,
+        ref: oracle_utxo_param,
     }
 
     // UTxO to pay for fees and min UTxO values
     input gas {
-      from: Operator,
-      min_amount: min_utxo(oracle) + min_utxo(change) + fees,
+        from: Operator,
+        min_amount: min_utxo(oracle) + min_utxo(change) + fees,
     }
 
     collateral {
-      from: Operator,
-      min_amount: Ada(5000000),
+        from: Operator,
+        min_amount: Ada(5000000),
     }
 
     mint {
-      amount: OracleNFT(1),
-      redeemer: (),
+        amount: OracleNFT(1),
+        redeemer: (),
     }
 
     // Oracle UTxO with the minted NFT and the rate datum
     output oracle {
-      to: Oracle,
-      amount: min_utxo(oracle) + OracleNFT(1),
-      datum: rate,
+        to: Oracle,
+        amount: min_utxo(oracle) + OracleNFT(1),
+        datum: rate,
     }
 
     output change {
-      to: Operator,
-      amount: gas + oracle_input - fees - min_utxo(oracle),
+        to: Operator,
+        amount: gas + oracle_input - fees - min_utxo(oracle),
     }
 
     signers {
-      Operator,
+        Operator,
     }
 }
 
@@ -71,38 +112,38 @@ tx update(
     old_oracle_ref: UtxoRef,
 ) {
     reference contract {
-      ref: spend_contract_ref,
+        ref: spend_contract_ref,
     }
 
     input old_oracle {
-      ref: old_oracle_ref,
-      datum_is: Int,
-      redeemer: OracleRedeemer::Update {},
+        ref: old_oracle_ref,
+        datum_is: Int,
+        redeemer: OracleRedeemer::Update {},
     }
 
     input gas {
-      from: Operator,
-      min_amount: fees + min_utxo(oracle) + min_utxo(change),
+        from: Operator,
+        min_amount: fees + min_utxo(oracle) + min_utxo(change),
     }
 
     collateral {
-      from: Operator,
-      min_amount: Ada(5000000),
+        from: Operator,
+        min_amount: Ada(5000000),
     }
 
     output oracle {
-      to: Oracle,
-      amount: min_utxo(oracle) + OracleNFT(1),
-      datum: newRate,
+        to: Oracle,
+        amount: min_utxo(oracle) + OracleNFT(1),
+        datum: newRate,
     }
 
     output change {
-      to: Operator,
-      amount: gas + old_oracle - OracleNFT(1) - min_utxo(oracle) - fees,
+        to: Operator,
+        amount: gas + old_oracle - OracleNFT(1),
     }
 
     signers {
-      Operator,
+        Operator,
     }
 }
 
@@ -113,31 +154,31 @@ tx delete(
     old_oracle_ref: UtxoRef,
 ) {
     reference contract {
-      ref: spend_contract_ref,
+        ref: spend_contract_ref,
     }
 
     input old_oracle {
-      ref: old_oracle_ref,
-      datum_is: Int,
-      redeemer: OracleRedeemer::Delete {},
+        ref: old_oracle_ref,
+        datum_is: Int,
+        redeemer: OracleRedeemer::Delete {},
     }
 
     input gas {
-      from: Operator,
-      min_amount: min_utxo(trash) + fees,
+        from: Operator,
+        min_amount: min_utxo(trash) + fees,
     }
 
     collateral {
-      from: Operator,
-      min_amount: Ada(5000000),
+        from: Operator,
+        min_amount: Ada(5000000),
     }
 
-   output trash {
-     to: Trash,
-     amount: old_oracle + gas - fees,
-   }
+    output trash {
+        to: Trash,
+        amount: old_oracle + gas - fees,
+    }
 
     signers {
-      Operator,
+        Operator,
     }
 }
