@@ -18,6 +18,21 @@ type OracleRedeemer {
     Delete,
 }
 
+env {
+    // Output reference of the minting contract delpoyment
+    minting_contract_ref: UtxoRef,
+    // Output reference of the spending contract
+    spend_contract_ref: UtxoRef,
+    // Plutus version of the NFT minting policy
+    nft_script_version: Int,
+    // Script of the NFT minting policy
+    nft_script: Bytes,
+    // Script of the oracle spending validator
+    oracle_script: Bytes,
+    // Plutus version of the oracle spending validator
+    oracle_script_version: Int,
+}
+
 tx publish(
     // Plutus version of the NFT minting policy
     nft_script_version: Int,
@@ -55,8 +70,6 @@ tx publish(
 
 
 tx create(
-    // Output reference of the minting contract delpoyment
-    minting_contract_ref: UtxoRef,
     // Parameter of the Mingint Policy of the NFT
     oracle_utxo_param: UtxoRef,
     // Data to be stored in the oracle
@@ -104,21 +117,17 @@ tx create(
 }
 
 tx update(
-    // Output reference of the spending contract
-    spend_contract_ref: UtxoRef,
     // New data to be stored in the oracle
     newRate: Int,
-    // Output reference of the current oracle UTxO
-    old_oracle_ref: UtxoRef,
 ) {
     reference contract {
         ref: spend_contract_ref,
     }
 
     input old_oracle {
-        ref: old_oracle_ref,
-        datum_is: Int,
-        redeemer: OracleRedeemer::Update {},
+      min_amount: OracleNFT(1),
+      datum_is: Int,
+      redeemer: OracleRedeemer::Update {},
     }
 
     input gas {
@@ -147,20 +156,15 @@ tx update(
     }
 }
 
-tx delete(
-     // Output reference of the spending contract
-    spend_contract_ref: UtxoRef,
-    // Output reference of the current oracle UTxO
-    old_oracle_ref: UtxoRef,
-) {
+tx delete() {
     reference contract {
         ref: spend_contract_ref,
     }
 
     input old_oracle {
-        ref: old_oracle_ref,
-        datum_is: Int,
-        redeemer: OracleRedeemer::Delete {},
+      min_amount: OracleNFT(1),
+      datum_is: Int,
+      redeemer: OracleRedeemer::Delete {},
     }
 
     input gas {
