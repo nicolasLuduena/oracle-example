@@ -13,9 +13,14 @@ type OracleRedeemer {
     Delete,
 }
 
-tx create(
+env {
     // Output reference of the minting contract delpoyment
     minting_contract_ref: UtxoRef,
+    // Output reference of the spending contract
+    spend_contract_ref: UtxoRef,
+}
+
+tx create(
     // Parameter of the Mingint Policy of the NFT
     oracle_utxo_param: UtxoRef,
     // Data to be stored in the oracle
@@ -63,19 +68,15 @@ tx create(
 }
 
 tx update(
-    // Output reference of the spending contract
-    spend_contract_ref: UtxoRef,
     // New data to be stored in the oracle
     newRate: Int,
-    // Output reference of the current oracle UTxO
-    old_oracle_ref: UtxoRef,
 ) {
     reference contract {
       ref: spend_contract_ref,
     }
 
     input old_oracle {
-      ref: old_oracle_ref,
+      min_amount: OracleNFT(1),
       datum_is: Int,
       redeemer: OracleRedeemer::Update {},
     }
@@ -106,18 +107,13 @@ tx update(
     }
 }
 
-tx delete(
-     // Output reference of the spending contract
-    spend_contract_ref: UtxoRef,
-    // Output reference of the current oracle UTxO
-    old_oracle_ref: UtxoRef,
-) {
+tx delete() {
     reference contract {
       ref: spend_contract_ref,
     }
 
     input old_oracle {
-      ref: old_oracle_ref,
+      min_amount: OracleNFT(1),
       datum_is: Int,
       redeemer: OracleRedeemer::Delete {},
     }
