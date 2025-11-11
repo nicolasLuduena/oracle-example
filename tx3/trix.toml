@@ -16,6 +16,7 @@ chain = "CardanoPreview"
 
 [profiles.preprod]
 chain = "CardanoPreprod"
+env_file = ".env.preprod"
 
 [profiles.mainnet]
 chain = "CardanoMainnet"
@@ -29,9 +30,13 @@ path = ".trix/client-lib"
 ref = "bindgen-v1alpha2"
 
 [[wallets]]
-name = "alice"
+name = "operator"
 random_key = true
 
 [[wallets]]
-name = "bob"
+name = "oracle"
+random_key = true
+
+[[wallets]]
+name = "trash"
 random_key = true

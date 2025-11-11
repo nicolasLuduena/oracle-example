@@ -128,10 +128,10 @@ tx delete() {
       min_amount: Ada(5000000),
     }
 
-   output trash {
-     to: Trash,
-     amount: old_oracle + gas - fees,
-   }
+    output trash {
+      to: Trash,
+      amount: old_oracle + gas - fees,
+    }
 
     signers {
       Operator,

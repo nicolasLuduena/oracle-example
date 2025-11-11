@@ -1,0 +1,28 @@
+file = "./main.tx3"
+
+[[wallets]]
+name = "oracle"
+balance = 10000000
+
+[[wallets]]
+name = "operator"
+balance = 5000000
+
+[[transactions]]
+description = "Create a new oracle"
+template = "create"
+signers = ["operator"]
+args = { oracle_utxo_param = "1abe80f8205d44370a0237a9482e8dcf5804624981c9106a1941dd7d02fda57f#3", rate = 42, operator = "@operator", oracle = "@oracle" }
+
+
+[[expect]]
+from = "@oracle"
+datum_equals = 42 # maps to plutus data
+
+[[expect.min_amount]]
+amount = 20000000
+
+[[expect.min_amount]]
+policy = "86e4c24ecc59e0a5fa2915902a3bf74bb451f558680239c5158f5f9f"
+name = "OracleNFT"
+amount = 1

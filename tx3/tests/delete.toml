@@ -1,0 +1,29 @@
+file = "./main.tx3"
+
+[[wallets]]
+name = "operator"
+balance = 5000000
+
+[[wallets]]
+name = "trash"
+balance = 0
+
+[[transactions]]
+description = "Delete an existing oracle"
+template = "delete"
+signers = ["operator"]
+args = { operator = "@operator", trash = "@trash" }
+
+[[expect]]
+from = "@operator"
+
+[[expect.min_amount]]
+amount = 20000000
+
+[[expect]]
+from = "@trash"
+
+[[expect.min_amount]]
+policy = "86e4c24ecc59e0a5fa2915902a3bf74bb451f558680239c5158f5f9f"
+name = "OracleNFT"
+amount = 1
