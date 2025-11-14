@@ -12,8 +12,7 @@ balance = 5000000
 description = "Create a new oracle"
 template = "create"
 signers = ["operator"]
-args = { oracle_utxo_param = "1abe80f8205d44370a0237a9482e8dcf5804624981c9106a1941dd7d02fda57f#3", rate = 42, operator = "@operator", oracle = "@oracle" }
-
+args = { oracle_utxo_param = "17f673315040782e98b2e75057d64bb03a71ec9289e28e3444b567d01e461d1d#0", rate = 42, operator = "@operator", oracle = "@oracle" }
 
 [[expect]]
 from = "@oracle"

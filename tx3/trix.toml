@@ -8,6 +8,10 @@ main = "main.tx3"
 [registry]
 url = "https://tx3.land"
 
+[profiles.devnet.trp]
+url = "http://localhost:8000"
+headers = {}
+
 [profiles.devnet]
 chain = "CardanoDevnet"
 
